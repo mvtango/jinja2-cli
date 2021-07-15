@@ -69,6 +69,9 @@ class MalformedEnv(InvalidDataFormat):
     pass
 
 
+class MalformedTSV(InvalidDataFormat):
+    pass
+
 def get_format(fmt):
     try:
         return formats[fmt]()
@@ -100,6 +103,14 @@ def _load_json():
         import simplejson
 
         return simplejson.loads, simplejson.decoder.JSONDecodeError, MalformedJSON
+
+def _load_tsv():
+    try:
+        from jinja2cli import tsvloader
+
+        return tsvloader.loads, tsvloader.TSVError, MalformedTSV
+    except ImportError:
+        raise
 
 
 def _load_ini():
@@ -209,6 +220,7 @@ formats = {
     "toml": _load_toml,
     "xml": _load_xml,
     "env": _load_env,
+    "tsv": _load_tsv
 }
 
 
